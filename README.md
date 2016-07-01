@@ -17,6 +17,6 @@ Utilising the apache commons-net FTPClient  hermes-ftp provides connections to F
 
 # Todos
 * remote file systems
-** provide FTPS support
-** provide SFPT support
-** provide WEB-Dav support
+* provide FTPS support
+* provide SFPT support
+* provide WEB-Dav support
