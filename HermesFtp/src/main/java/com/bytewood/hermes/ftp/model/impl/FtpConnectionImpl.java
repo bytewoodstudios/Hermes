@@ -41,4 +41,8 @@ public class FtpConnectionImpl implements FtpConnection {
 		this.password = password;
 	}
 
+	public String toString() {
+		return "ftp://"+this.userName+"@"+this.host+":"+this.port;
+	}
+	
 }
