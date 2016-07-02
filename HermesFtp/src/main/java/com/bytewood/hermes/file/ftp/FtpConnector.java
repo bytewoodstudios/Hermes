@@ -1,5 +1,6 @@
 package com.bytewood.hermes.file.ftp;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -155,7 +156,7 @@ public class FtpConnector extends BaseFileSystemConnector<FtpConnection> {
 		return this.doListDirectory(path, false, true);
 	}
 	
-	private List<String> doListDirectory(String path, boolean excludeFolders, boolean ExcludeFiles) throws IOException {
+	private List<String> doListDirectory(String path, boolean excludeFolders, boolean excludeFiles) throws IOException {
 		this.guard(path);
 		FTPFile [] ar = null;
 		try {
@@ -174,9 +175,12 @@ public class FtpConnector extends BaseFileSystemConnector<FtpConnection> {
 			if (excludeFolders && cur.isDirectory())
 				continue;
 			//check if files should be excluded
-			if (ExcludeFiles && cur.isFile())
+			if (excludeFiles && cur.isFile())
 				continue;
-			ret.add( full(path, cur.getName()) );
+			//add trailing "/" for folders
+			String name = (cur.isFile()) ? cur.getName() : cur.getName()+File.separator; 
+			
+			ret.add( full(path, name) );
 		}
 		
 		return ret;

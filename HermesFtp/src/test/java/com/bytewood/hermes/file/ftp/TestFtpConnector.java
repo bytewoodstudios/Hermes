@@ -2,6 +2,14 @@ package com.bytewood.hermes.file.ftp;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.junit.After;
@@ -11,6 +19,7 @@ import org.junit.Test;
 
 import com.bytewood.filesystem.AbstractTestConnector;
 import com.bytewood.test.FtpServerWrapper;
+
 
 public class TestFtpConnector extends AbstractTestConnector {
 
@@ -34,7 +43,6 @@ public class TestFtpConnector extends AbstractTestConnector {
 		super.conn = ftp;
 		super.remoteRoot = "/";
 		super.remotePathToADirectory = "/folder1";
-		super.minimumFilesInRemoteDirectory = 2;
 		super.remotePathToAFile = "/file1";
 	}
 
@@ -43,6 +51,48 @@ public class TestFtpConnector extends AbstractTestConnector {
 		this.conn.disconnect();
 	}
 
+	/** 
+	 * Provides a guaranteed correct input stream by accessing files via the local file system.
+	 * It is assumed that these files exist
+	 * @throws  
+	 */
+	@Override
+	protected InputStream getExpectedFileContent(String path) {
+		System.out.println(path);
+		File expectedFile = new File(FtpServerWrapper.ftpRoot.getAbsolutePath() + File.separator + path);
+		assertTrue("It is assumed that files to be able to provide content",expectedFile.exists());
+		assertTrue("It is assumed that provided paths are files",expectedFile.isFile());
+		try {
+			return new FileInputStream(expectedFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/** 
+	 * Provides a guaranteed correct list of all folder contents by accessing the ftp folder via the local file system.
+	 * It is assumed that the folder exist
+	 * @throws  
+	 */
+	@Override
+	protected Set<String> getExpectedFolderContent(String path) {
+		File folder = new File(FtpServerWrapper.ftpRoot.getAbsolutePath() + File.separator + path);
+		assertTrue("It is assumed that files to be able to provide content",folder.exists());
+		assertTrue("It is assumed that files provided paths are folders",folder.isDirectory());
+		
+		if (path.endsWith(File.separator) == false)
+			path += File.separator; 
+		String[] ls = folder.list();
+		for(int i=0; i<ls.length; i++)
+			ls[i] = path + ls[i];
+		
+		return new HashSet<String>(Arrays.asList(ls));
+	}
+	
+	/*
+	 * Tests
+	 */
 	@Test
 	public void testUseCorrectFtpClient() {
 		FtpConnector ftp = new FtpConnector();

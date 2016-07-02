@@ -53,7 +53,7 @@ public class FtpServerWrapper {
 		user.setPassword(ftpUserPass);
 		users.add(user);
 	}
-	private File ftpRoot = new File("src/test/resources/ftpRoot");
+	public static final File ftpRoot = new File("src/test/resources/ftpRoot");
 	
 	public void start() throws FtpException {
 		if (ftpRoot.exists() == false || ftpRoot.isDirectory() == false)
@@ -81,12 +81,5 @@ public class FtpServerWrapper {
         //give write access to every user
         //start new server
         server.start();
-	}
-	
-	/*
-	 * Getters and Setters
-	 */
-	public void setFtpRoot(File arg) {
-		this.ftpRoot = arg;
 	}
 }
