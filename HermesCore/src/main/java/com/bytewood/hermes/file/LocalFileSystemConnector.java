@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,16 +20,29 @@ public class LocalFileSystemConnector extends BaseFileSystemConnector<FileSystem
 	
 	protected boolean isConnected = true;
 	
+	/**
+	 * The constructor fills the BaseFileSystemConnector's connection property to comply with Hermes api behaviour
+	 */
+	public LocalFileSystemConnector() {
+		super.connection = this;
+	}
+	
 	public boolean isConnected() {
 		return this.isConnected;
 	}
 	
 	public boolean connect() {
+		//this check exists to be consitent with the expected behaviour of remote file system connection experts
+		if (super.connection == null)
+			throw new UnsupportedOperationException(NO_CONNECTION_EXCEPTION);
 		this.isConnected = true;
 		return true;
 	}
 
 	public boolean connect(FileSystemConnection arg) {
+		//this check exists to be consitent with the expected behaviour of remote file system connection experts
+		if (arg == null)
+			throw new IllegalArgumentException(NO_CONNECTION_EXCEPTION);
 		return true;
 	}
 	
@@ -55,8 +69,17 @@ public class LocalFileSystemConnector extends BaseFileSystemConnector<FileSystem
 			throw new FileNotFoundException("could not find folder: "+fullPath);
 		if (folder.isDirectory() == false)
 			throw new FileNotFoundException(String.format(NOT_A_FOLDER_EXCEPTION,fullPath));
-		
-		return Arrays.asList( folder.list() );
+
+		//construct fully qualified paths
+		File[] ls = folder.listFiles();
+		List<String> ret = new ArrayList<String>(ls.length);
+		for (File cur : ls) {
+			String name = cur.getName();
+			if (cur.isDirectory())
+				name += File.separator;
+			ret.add( full(path,name));
+		}
+		return ret;
 	}
 	
 	/**

@@ -27,6 +27,8 @@ public interface FileSystemConnector<T> {
 	 * @throws IllegalArgumentException if path is null
 	 * @throws FileNotFoundException if the path is invalid
 	 * @throws IOException if any exception occurs while communicating with the remote file system
+	 * @param path the fully qualified remote path e.g.: "/folder1/folder2" or "/folder1/folder2/"
+	 * @return a list of all the files and folders in a given directory identified by their fully qualified path relative to the remote root
 	 */
 	public List<String> listDirectory(String directory) throws FileNotFoundException, IOException;
 
@@ -34,6 +36,8 @@ public interface FileSystemConnector<T> {
 	 * @throws IllegalArgumentException if path is null
 	 * @throws FileNotFoundException if the path is invalid
 	 * @throws IOException if any exception occurs while communicating with the remote file system
+	 * @param path the fully qualified remote path e.g.: "/folder1/folder2" or "/folder1/folder2/" 
+	 * @return a list of all the files in a given directory identified by their fully qualified path relative to the remote root
 	 */
 	public List<String> listFilesInDirectory(String path) throws FileNotFoundException, IOException;
 
@@ -41,6 +45,8 @@ public interface FileSystemConnector<T> {
 	 * @throws IllegalArgumentException if path is null
 	 * @throws FileNotFoundException if the path is invalid
 	 * @throws IOException if any exception occurs while communicating with the remote file system
+	 * @param path the fully qualified remote path e.g.: "/folder1/folder2" or "/folder1/folder2/"
+	 * @return a list of all the folders in a given directory identified by their fully qualified path relative to the remote root
 	 */
 	public List<String> listFoldersInDirectory(String path) throws FileNotFoundException, IOException;
 

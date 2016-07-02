@@ -1,18 +1,15 @@
 package com.bytewood.filesystem;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -21,6 +18,28 @@ import com.bytewood.hermes.api.FileSystemConnector;
 import com.bytewood.hermes.model.FileSystemConnection;
 
 public abstract class AbstractTestConnector {
+	/**
+	 * This method is to be used by the implementing test class to provide a guaranteed correct stream of a file on the remote file system.
+	 * This is not always possible in which case null can be returned to skip the comparison
+	 * @param path
+	 * @return null if no stream can be provided at all
+	 * @return a stream of the expected content of a remote file
+	 */
+	protected abstract InputStream getExpectedFileContent(String path);
+
+	/**
+	 * This method provides the capability of checking that all contents were provided by the remote file system to the unit test.
+	 * It is expected that this method returns fully qualified file and directory paths relative to the remote file system root.<br>
+	 * example
+	 * <li> /folder1/folder2/file1
+	 * <li> /folder1/folder2/file2
+	 * <li> ...
+	 * 
+	 * @param path full remote path to the folder under test. E.g. "/folder1/folder2"
+	 * @return a set of all fully qualified file- and folder-names in the given directory
+	 */
+	protected abstract Set<String> getExpectedFolderContent(String path);
+	
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -32,9 +51,7 @@ public abstract class AbstractTestConnector {
 	protected FileSystemConnector<? extends FileSystemConnection> conn;
 	protected String remoteRoot;
 	protected String remotePathToADirectory;
-	protected int	 minimumFilesInRemoteDirectory = -1;
 	protected String remotePathToAFile;
-	protected HashMap<String,String> expectedContent = new HashMap<String,String>();
 
 	/*
 	 * Test Subclass Setup
@@ -43,7 +60,6 @@ public abstract class AbstractTestConnector {
 	public void testSubclassSetup() {
 		assertNotNull("remote root was not set by implementing subclass", remoteRoot);
 		assertNotNull("remote test dirtectory was not set by implementing subclass", remotePathToADirectory);
-		assertFalse("number of files in remote test directory was not set by implementing subclass", minimumFilesInRemoteDirectory <= -1);
 		assertNotNull("remote test file was not set by implementing subclass", remotePathToAFile);
 	}
 	
@@ -128,8 +144,14 @@ public abstract class AbstractTestConnector {
 	
 	@Test //positive
 	public void testListDirectory() throws NullPointerException, IOException {
-		List<String> files = this.conn.listDirectory(this.remoteRoot);
-		assertTrue("Did not list a minimum of " + this.minimumFilesInRemoteDirectory+" files.", files.size() >= this.minimumFilesInRemoteDirectory);
+		List<String> ls = this.conn.listDirectory(this.remoteRoot);
+		int actual = ls.size();
+		int expected = this.getExpectedFolderContent(this.remoteRoot).size();
+		assertEquals("Expected "+expected+" number of files but found "+actual+" in remote directory", expected, actual);
+		for (String cur : ls) {
+			assertNotNull(cur);
+			assertTrue("paths have to start with \"/\"", cur.startsWith(File.separator));
+		}
 	}
 	
 	@Test //negative
@@ -141,14 +163,24 @@ public abstract class AbstractTestConnector {
 	
 	@Test //positive
 	public void testListAllFilesInDirectory() throws IOException {
-		List<String>files = this.conn.listFilesInDirectory(this.remoteRoot);
-		assertTrue("No Files found in remote directory, even tough there should be some.", files.size() > 0);
+		List<String> ls = this.conn.listFilesInDirectory(this.remoteRoot);
+		assertTrue("No Files found in remote directory, even tough there should be some.", ls.size() > 0);
+		for (String cur : ls) {
+			assertNotNull(cur);
+			assertTrue("paths have to start with \"/\"", cur.startsWith(File.separator));
+			assertTrue("file paths must not end with \"/\"", cur.endsWith(File.separator) == false);
+		}
 	}
 
 	@Test //positive
 	public void testListAllFoldersInDirectory() throws IOException {
-		List<String>files = this.conn.listFoldersInDirectory(this.remoteRoot);
-		assertTrue("No Files found in remote directory, even tough there should be some.", files.size() > 0);
+		List<String>ls = this.conn.listFoldersInDirectory(this.remoteRoot);
+		assertTrue("No Folders found in remote directory, even tough there should be some.", ls.size() > 0);
+		for (String cur : ls) {
+			assertNotNull(cur);
+			assertTrue("paths have to start with \"/\"", cur.startsWith(File.separator));
+			assertTrue("folder paths have to end with \"/\"", cur.endsWith(File.separator));
+		}
 	}
 	
 	
@@ -163,27 +195,32 @@ public abstract class AbstractTestConnector {
 
 	@Test //positive
 	public void testDownloadAllFilesInExistingFolder() throws IOException {
+		//first we get all files and folders which are expected in the remote folder
+		Set<String> expectedFolderContent = this.getExpectedFolderContent(this.remoteRoot);
 		List<String> files = this.conn.listDirectory(this.remoteRoot);
-		int counter = 0;
 		for (String cur : files) {
 			//check for folders
-			if (this.conn.isFolder(this.remoteRoot + "/" + cur))
+			if (this.conn.isFolder(cur)) {
+				//remove folders
+				expectedFolderContent.remove(cur);
 				continue;
+			}
 			
 			//download file
-			InputStream in = this.conn.provideInputStream(this.remoteRoot+"/"+cur);
-			@SuppressWarnings("resource")
-			java.util.Scanner s = new java.util.Scanner(in).useDelimiter("\\A");
-			String content =  s.hasNext() ? s.next() : "";
-			
-			//compare content with expected content
-			String expected = this.expectedContent.get(cur);
+			InputStream content = this.conn.provideInputStream(cur);
 			assertNotNull(content);
-			assertNotNull(expected);
-			assertEquals(expected, content);
-			counter++;
+			//remove the file which has been downloaded
+			expectedFolderContent.remove(cur);
+			
+			
+			InputStream expected = this.getExpectedFileContent(cur);
+			if (expected == null)
+				continue;
+			//compare content with expected content
+			assertTrue(IOUtils.contentEquals(expected, content ));
 		}
-		assertTrue(counter > 0);
+		//in the end no file should remain in the set because all have been downloaded
+		assertTrue(expectedFolderContent.toString(), expectedFolderContent.isEmpty());
 	}
 
 	@Test

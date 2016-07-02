@@ -49,24 +49,28 @@ public abstract class BaseFileSystemConnector<T> implements FileSystemConnector<
 	}
 	
 	public List<String> listFilesInDirectory(String path) throws IOException {
-		this.guard(path);
-		List<String> src = this.listDirectory( full(path) );
-		List<String> ret = new ArrayList<String>( src.size() );
-		
-		for (String cur : src)
-			if( this.isFile(  full( cur )  ) == true)
-					ret.add(cur);
-		return ret;
+		return this.doListFilesOrFoldersInDirectory(path, true, false);
 	}
 	
 	public List<String> listFoldersInDirectory(String path) throws IOException {
+		return this.doListFilesOrFoldersInDirectory(path, false, true);
+	}
+	
+	private List<String> doListFilesOrFoldersInDirectory(String path, boolean excludeFolders, boolean excludeFiles) throws FileNotFoundException, IOException {
 		this.guard(path);
 		List<String> src = this.listDirectory( full(path) );
 		List<String> ret = new ArrayList<String>( src.size() );
 		
-		for (String cur : src)
-			if( this.isFolder(  full( cur )  ) == true)
-				ret.add(cur);
+		for (String cur : src) {
+			//check if folders should be excluded
+			if (excludeFolders && this.isFolder( cur ))
+				continue;
+			//check if files should be excluded
+			if (excludeFiles && this.isFile( cur ))
+				continue;
+			
+			ret.add(cur);
+		}
 		return ret;
 	}
 	
