@@ -19,7 +19,6 @@ public abstract class BaseFileSystemConnector<T> implements FileSystemConnector<
 	public static final String LIST_FILES_EXCEPTION			= "Could not list files in directory %s: %s";
 	public static final String FILE_HAS_VANISHED_EXCEPTION	= "The remote file '%s' could not be found.";
 
-	protected boolean isConnected = false;
 	protected T connection;
 
 	/**
@@ -43,14 +42,10 @@ public abstract class BaseFileSystemConnector<T> implements FileSystemConnector<
 	}
 	
 	protected void guard(String path) {
-		if (this.isConnected == false)
+		if (this.isConnected() == false)
 			throw new UnsupportedOperationException("Cannot provide a file input stream because the file system has been actively disconnected");
 		if (path == null)
 			throw new IllegalArgumentException("Provided path is null");
-	}
-	
-	public boolean isConnected() {
-		return this.isConnected;
 	}
 	
 	public List<String> listFilesInDirectory(String path) throws IOException {

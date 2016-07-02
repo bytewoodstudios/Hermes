@@ -32,9 +32,10 @@ import com.bytewood.hermes.model.FtpConnection;
  * @author rainerkern
  */
 public class FtpConnector extends BaseFileSystemConnector<FtpConnection> {
+
 	FTPClient ftpClient;
-	
 	private int maxConnectionRetries = 3;
+	
 	
 	@Override
 	protected void guard(String path) {
@@ -43,13 +44,20 @@ public class FtpConnector extends BaseFileSystemConnector<FtpConnection> {
 	}
 	
 	private void guard() {
-		if (this.isConnected == false)
+		if (this.isConnected() == false)
 			throw new UnsupportedOperationException(NOT_INITIALISED_EXCEPTION);
 	}
 	
+	public boolean isConnected() {
+		if (this.ftpClient == null)
+			return false;
+		//else
+		return this.ftpClient.isConnected();
+	}
 	
 	@Override
 	public boolean connect(FtpConnection arg) {
+		//on connect(null) an IllegalArgumentException is thrown
 		if (arg == null)
 			throw new IllegalArgumentException(NO_CONNECTION_EXCEPTION);
 		this.connection = arg;
@@ -68,27 +76,25 @@ public class FtpConnector extends BaseFileSystemConnector<FtpConnection> {
 		if (this.ftpClient == null)
 			this.ftpClient = new FTPClient();
 		
-		super.isConnected = this.ftpClient.isConnected();
-		if (super.isConnected == true)
+		if (this.isConnected() == true)
 			return true;
 
 		for (int i=0; i <= this.maxConnectionRetries; i++) {
-			super.isConnected = this.doConnect(); 
-			if (super.isConnected == true)
+			this.doConnect(); 
+			if (this.isConnected() == true)
 				break;
 		}
-		return super.isConnected;
+		return this.isConnected();
 	}
 	
-	private boolean doConnect() {
-//		String connectionSpec = this.getConnectionInfo();
+	private void doConnect() {
 //		if (logger.isTraceEnabled())
-//			logger.trace(String.format("connecting to %s", connectionSpec));
+//			logger.trace(String.format("connecting to %s", this.connection.toString()));
 		
 		try {
 			// establish connection
 //TODO		if (Log Trace)
-//				"connecting to server %s"
+//				String.format("connecting to server %s", this.connection.getServer);
 			this.ftpClient.connect(this.connection.getHost(), this.connection.getPort());
 			
 			//check and switch to a specific client mode
@@ -105,16 +111,16 @@ public class FtpConnector extends BaseFileSystemConnector<FtpConnection> {
 			//check and setFile Type
 //			this.establishFileType(this.connection.getFileType());
 
-			return true;
+			return;
 		} catch (ConnectException e) {
-//			TODO Warn "unable to connect %s: %s" - this.connection, e.getMessage()
-			return false;
+//			TODO Warn "unable to connect %s: %s" - this.connection.toString(), e.getMessage()
+			return;
 		} catch (SocketTimeoutException e) {
 //			TODO Warn about socket timeout exception
-			return false;			
+			return;			
 		} catch (Exception e) {
-//			TODO Warn error while connecting %s: %s" - this.connection, e.getMessage()
-			return false;
+//			TODO Warn error while connecting %s: %s" - this.connection.toString(), e.getMessage()
+			return;
 		} 
 	}
 
@@ -126,7 +132,6 @@ public class FtpConnector extends BaseFileSystemConnector<FtpConnection> {
 			//basically ignore but we should print out a warning
 //			logger.warn()
 		}
-		this.isConnected = false;
 		return true;
 	}
 

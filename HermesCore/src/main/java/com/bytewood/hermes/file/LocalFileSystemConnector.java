@@ -17,11 +17,14 @@ import com.bytewood.hermes.model.FileSystemConnection;
  */
 public class LocalFileSystemConnector extends BaseFileSystemConnector<FileSystemConnection> implements FileSystemConnection {
 	
-	public LocalFileSystemConnector() {
-		super.isConnected = true;
+	protected boolean isConnected = true;
+	
+	public boolean isConnected() {
+		return this.isConnected;
 	}
 	
 	public boolean connect() {
+		this.isConnected = true;
 		return true;
 	}
 

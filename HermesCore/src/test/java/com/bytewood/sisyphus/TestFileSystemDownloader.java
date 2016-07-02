@@ -113,6 +113,11 @@ public class TestFileSystemDownloader {
 		}
 		
 		@Override
+		public boolean isConnected() {
+			return true;
+		}
+		
+		@Override
 		public boolean connect() {
 			return true;
 		}
