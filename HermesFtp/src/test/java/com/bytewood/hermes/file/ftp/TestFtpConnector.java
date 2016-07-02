@@ -58,7 +58,6 @@ public class TestFtpConnector extends AbstractTestConnector {
 	 */
 	@Override
 	protected InputStream getExpectedFileContent(String path) {
-		System.out.println(path);
 		File expectedFile = new File(FtpServerWrapper.ftpRoot.getAbsolutePath() + File.separator + path);
 		assertTrue("It is assumed that files to be able to provide content",expectedFile.exists());
 		assertTrue("It is assumed that provided paths are files",expectedFile.isFile());
@@ -81,13 +80,15 @@ public class TestFtpConnector extends AbstractTestConnector {
 		assertTrue("It is assumed that files to be able to provide content",folder.exists());
 		assertTrue("It is assumed that files provided paths are folders",folder.isDirectory());
 		
-		if (path.endsWith(File.separator) == false)
-			path += File.separator; 
-		String[] ls = folder.list();
-		for(int i=0; i<ls.length; i++)
-			ls[i] = path + ls[i];
-		
-		return new HashSet<String>(Arrays.asList(ls));
+		File[] ls = folder.listFiles();
+		Set<String> ret = new HashSet<String>(ls.length);
+		for(File cur : ls) {
+			String name = path + cur.getName();
+			if (cur.isDirectory())
+				name += File.separator;
+			ret.add(name);
+		}
+		return ret;
 	}
 	
 	/*
