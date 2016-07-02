@@ -51,6 +51,11 @@ public class LocalFileSystemConnector extends BaseFileSystemConnector<FileSystem
 		return true;
 	}
 
+	public boolean exists(String path) throws FileNotFoundException {
+		super.guard(path);
+		return new File(full(path)).exists();
+	}	
+	
 	public boolean isFolder(String path) throws FileNotFoundException {
 		super.guard(path);
 		return new File(full(path)).isDirectory();

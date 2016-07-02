@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.bytewood.hermes.file.LocalFileSystemConnector;

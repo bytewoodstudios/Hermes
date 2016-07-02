@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.bytewood.filesystem.MockFSConnection;
 import com.bytewood.hermes.api.FileSystemConnector;
 import com.bytewood.hermes.api.TargetFileProvider;
 import com.bytewood.hermes.file.BaseFileSystemConnector;
@@ -91,82 +92,5 @@ public class TestFileSystemDownloader {
 		//disconnect on exit
 		this.downloader.setDisconnectOnExit(false);
 		assertFalse(this.downloader.getDisconnectOnExit());
-	}
-	
-	
-	/**
-	 * Mock Connection Class for faster testing. Even simulates folders
-	 */
-	@SuppressWarnings("rawtypes")
-	private class MockFSConnection extends BaseFileSystemConnector {
-		HashMap<String, String> files;
-		String directoryPath = "/directory";
-		
-		public MockFSConnection() {
-			this.files = new HashMap<String,String>();
-			String[] fileNames = {"test1", "test2", "test3", "test4"};
-			Random rnd = new Random();
-			for (String curName : fileNames) {
-				String content = Integer.toString(rnd.nextInt());
-				this.files.put(curName,content);
-			}
-		}
-		
-		@Override
-		public boolean isConnected() {
-			return true;
-		}
-		
-		@Override
-		public boolean connect() {
-			return true;
-		}
-
-		@Override
-		public boolean connect(Object connection) {
-			return true;
-		}
-
-		@Override
-		public boolean disconnect() {
-			return true;
-		}
-
-		@Override
-		public Object getConnection() {
-			return null;
-		}
-		
-		@Override
-		public void setConnection(Object arg) {
-		}
-
-		public List<String> listDirectory(String directory) throws FileNotFoundException {
-			//enumerate "files"
-			List<String> ret = new ArrayList<String>( this.files.keySet() );
-			
-			//if we are not currently "inside the directory" ... add it to the list
-			if (directory.endsWith(this.directoryPath) == false)
-				ret.add(directoryPath);
-			
-			return ret;
-		}
-
-		public InputStream provideInputStream(String path) throws FileNotFoundException {
-			String[] parts = path.split("/");
-			String filename = parts[parts.length-1];
-			String content = this.files.get(filename);
-			InputStream is = new ByteArrayInputStream( content.getBytes() );
-			return is;
-		}
-
-		public boolean isFolder(String path) throws FileNotFoundException {
-			return path.equals(directoryPath);
-		}
-
-		public boolean isFile(String path) throws FileNotFoundException {
-			return path.equals(directoryPath) == false;
-		}
-
 	}
 }

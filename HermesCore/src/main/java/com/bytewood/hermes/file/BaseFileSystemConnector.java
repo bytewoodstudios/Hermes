@@ -18,6 +18,10 @@ public abstract class BaseFileSystemConnector<T> implements FileSystemConnector<
 	public static final String NOT_A_FOLDER_EXCEPTION 		= "the provided path is not a folder: %s";
 	public static final String LIST_FILES_EXCEPTION			= "Could not list files in directory %s: %s";
 	public static final String FILE_HAS_VANISHED_EXCEPTION	= "The remote file '%s' could not be found.";
+	public static final String PATH_IS_NULL					= "The path provided is null";
+	public static final String FOLDER_PATH_IS_NULL			= "The folder path provided is null";
+	public static final String FILE_PATH_IS_NULL			= "The file path provided is null";
+	
 
 	protected T connection;
 
@@ -28,6 +32,12 @@ public abstract class BaseFileSystemConnector<T> implements FileSystemConnector<
 	 * @return
 	 */
 	protected final String full(String folder, String filename) {
+		if (folder == null)
+			throw new IllegalArgumentException(FOLDER_PATH_IS_NULL);
+		if (filename == null)
+			throw new IllegalArgumentException(FILE_PATH_IS_NULL);
+		if (folder.startsWith(File.separator) == false)
+			folder = File.separator + folder;
 		if (folder.endsWith(File.separator) == false)
 			folder = folder + File.separator;
 		if (filename.startsWith(File.separator))
@@ -36,6 +46,8 @@ public abstract class BaseFileSystemConnector<T> implements FileSystemConnector<
 	}
 	
 	protected final String full(String path) {
+		if (path == null)
+			throw new IllegalArgumentException(PATH_IS_NULL);
 		if (path.startsWith(File.separator) == false)
 			return File.separator + path;
 		return path;
@@ -72,21 +84,6 @@ public abstract class BaseFileSystemConnector<T> implements FileSystemConnector<
 			ret.add(cur);
 		}
 		return ret;
-	}
-	
-	public boolean exists(String path) throws IOException {
-		this.guard(path);
-		
-		try { 
-			boolean a = this.isFile( full(path) );
-			boolean b = this.isFolder( full(path) );
-			if (a == false  && b == false)
-				return false;
-		} catch (FileNotFoundException e) {
-			return false;
-		}
-		
-		return true;
 	}
 	
 	/*

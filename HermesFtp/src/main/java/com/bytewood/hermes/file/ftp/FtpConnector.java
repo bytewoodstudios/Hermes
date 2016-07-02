@@ -125,7 +125,6 @@ public class FtpConnector extends BaseFileSystemConnector<FtpConnection> {
 		} 
 	}
 
-
 	public boolean disconnect() {
 		try {
 			this.ftpClient.disconnect();
@@ -185,6 +184,11 @@ public class FtpConnector extends BaseFileSystemConnector<FtpConnection> {
 		
 		return ret;
 	}
+	
+	public boolean exists(String path) throws FileNotFoundException, IOException {
+		throw new UnsupportedOperationException();
+	}
+	
 	
 	public boolean isFolder(String path) throws FileNotFoundException, IOException {
 		this.guard(path);
