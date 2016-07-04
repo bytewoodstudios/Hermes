@@ -20,3 +20,4 @@ Utilising the apache commons-net FTPClient  hermes-ftp provides connections to F
 * provide FTPS support
 * provide SFPT support
 * provide WEB-Dav support
+* include messaging via MQ and commercial messengers (Skype, Slack, ...)
