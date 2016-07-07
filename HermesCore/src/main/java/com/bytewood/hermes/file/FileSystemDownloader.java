@@ -76,7 +76,7 @@ public class FileSystemDownloader {
 	 */
 	private File download(String folder, String file) throws Exception, IOException, FileNotFoundException {
 		/* You can get Path from file also: file.toPath() */
-		InputStream in = this.connector.provideInputStream(folder + "/" + file);
+		InputStream in = this.connector.receive(folder + "/" + file);
 		File target = this.targetFileProvider.provide(file);
 		Path path = Paths.get(target.getAbsolutePath());
 		Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);

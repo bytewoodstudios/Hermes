@@ -189,7 +189,7 @@ public abstract class AbstractTestConnector {
 	 */
 	@Test //positive
 	public void testDownloadSingleFile() throws IOException {
-		InputStream is = this.conn.provideInputStream(remotePathToAFile);
+		InputStream is = this.conn.receive(remotePathToAFile);
 		assertNotNull(is);
 	}
 
@@ -207,7 +207,7 @@ public abstract class AbstractTestConnector {
 			}
 			
 			//download file
-			InputStream content = this.conn.provideInputStream(cur);
+			InputStream content = this.conn.receive(cur);
 			assertNotNull(content);
 			//remove the file which has been downloaded
 			expectedFolderContent.remove(cur);
@@ -240,14 +240,14 @@ public abstract class AbstractTestConnector {
 	@Test
 	public void testFailOnDownloadNonExistingFile() throws IOException {
 		thrown.expect(FileNotFoundException.class);
-		this.conn.provideInputStream("does/not/exist");
+		this.conn.receive("does/not/exist");
 		fail("no exception was raised");
 	}
 
 	@Test
 	public void testFailOnDownloadNullFile() throws IOException {
 		thrown.expect(IllegalArgumentException.class);
-		this.conn.provideInputStream(null);
+		this.conn.receive(null);
 		fail("no exception was raised");
 	}
 	
@@ -255,7 +255,7 @@ public abstract class AbstractTestConnector {
 	public void testFailOnDownloadWhileDisconnected() throws IOException {
 		thrown.expect(UnsupportedOperationException.class);
 		this.conn.disconnect();
-		this.conn.provideInputStream("foo");
+		this.conn.receive("foo");
 		fail("no exception was raised");
 	}
 	

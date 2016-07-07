@@ -1,0 +1,11 @@
+hermes-ftp:
+  container_name: hermes-ftp
+  build:
+    .
+  dockerfile:
+    Dockerfile
+  environment:
+    - PUBLICHOST=localhost
+  ports:
+    - "21:21"
+    - "30000-30009:30000-30009"

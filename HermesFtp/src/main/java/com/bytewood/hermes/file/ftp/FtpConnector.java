@@ -213,7 +213,7 @@ public class FtpConnector extends BaseFileSystemConnector<FtpConnection> {
 	    return true;
 	}
 
-	public InputStream provideInputStream(String path) throws IOException {
+	public InputStream receive(String path) throws IOException {
 		this.guard(path);
 		InputStream is = this.ftpClient.retrieveFileStream(full(path));
 		if (is == null)

@@ -91,7 +91,7 @@ public class LocalFileSystemConnector extends BaseFileSystemConnector<FileSystem
 	 * @throws NullPointerException if path is null
 	 * @throws FileNotFoundException if the path is invalid
 	 */
-	public InputStream provideInputStream(String path) throws FileNotFoundException {
+	public InputStream receive(String path) throws FileNotFoundException {
 		super.guard(path);
 		File file = new File(full(path));
 		return new FileInputStream(file);

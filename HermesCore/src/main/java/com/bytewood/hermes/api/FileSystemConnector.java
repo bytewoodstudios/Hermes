@@ -79,6 +79,6 @@ public interface FileSystemConnector<T> {
 	 * @throws FileNotFoundException if the path is invalid
 	 * @throws IOException if any exception occurs while communicating with the remote file system
 	 */
-	public InputStream provideInputStream(String path) throws FileNotFoundException, IOException;
+	public InputStream receive(String path) throws FileNotFoundException, IOException;
 	
 }

@@ -80,7 +80,7 @@ public class MockFSConnection extends BaseFileSystemConnector {
 		return ret;
 	}
 
-	public InputStream provideInputStream(String path) throws FileNotFoundException {
+	public InputStream receive(String path) throws FileNotFoundException {
 		String[] parts = path.split("/");
 		String filename = parts[parts.length-1];
 		String content = this.files.get(filename);
