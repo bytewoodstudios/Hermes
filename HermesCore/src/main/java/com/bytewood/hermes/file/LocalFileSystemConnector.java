@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.bytewood.hermes.model.FileSystemConnection;
@@ -96,4 +96,9 @@ public class LocalFileSystemConnector extends BaseFileSystemConnector<FileSystem
 		File file = new File(full(path));
 		return new FileInputStream(file);
 	}
+	
+	public void send(String path, OutputStream os) {
+		throw new UnsupportedOperationException("sending is not yet implementd");
+	}
+
 }

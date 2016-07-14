@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,6 +89,10 @@ public class MockFSConnection extends BaseFileSystemConnector {
 		return is;
 	}
 
+	public void send(String path, OutputStream os) {
+		throw new UnsupportedOperationException("sending is not yet implementd");
+	}
+	
 	@Override
 	public boolean exists(String path) throws IOException {
 		return true;
