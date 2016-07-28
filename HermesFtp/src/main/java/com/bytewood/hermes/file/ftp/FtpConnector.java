@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -243,6 +244,10 @@ public class FtpConnector extends BaseFileSystemConnector<FtpConnection> {
 		return is;
 	}
 
+	public void send(String path, OutputStream os) {
+		throw new UnsupportedOperationException("sending is not yet implementd");
+	}
+	
 	/**
 	 * convenience method for directly downloading files
 	 * 

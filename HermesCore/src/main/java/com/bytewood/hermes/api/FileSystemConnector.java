@@ -3,6 +3,7 @@ package com.bytewood.hermes.api;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 public interface FileSystemConnector<T> {
@@ -80,5 +81,13 @@ public interface FileSystemConnector<T> {
 	 * @throws IOException if any exception occurs while communicating with the remote file system
 	 */
 	public InputStream receive(String path) throws FileNotFoundException, IOException;
+
+	/**
+	 * @throws NullPointerException if path is null
+	 * @throws FileNotFoundException if the path is invalid
+	 * @throws IOException if any exception occurs while communicating with the remote file system
+	 */
+	public void send(String path, OutputStream os) throws FileNotFoundException, IOException;
+
 	
 }
