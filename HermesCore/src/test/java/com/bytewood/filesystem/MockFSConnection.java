@@ -1,6 +1,9 @@
 package com.bytewood.filesystem;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -11,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,6 +28,9 @@ import com.bytewood.hermes.file.BaseFileSystemConnector;
  */
 @SuppressWarnings("rawtypes")
 public class MockFSConnection extends BaseFileSystemConnector {
+	@SuppressWarnings("unused")
+	private static Logger logger = Logger.getLogger(MockFSConnection.class.toString());
+	
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 	

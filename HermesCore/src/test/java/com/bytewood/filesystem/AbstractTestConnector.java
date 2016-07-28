@@ -1,6 +1,11 @@
 package com.bytewood.filesystem;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
@@ -17,7 +24,8 @@ import org.junit.rules.ExpectedException;
 import com.bytewood.hermes.api.FileSystemConnector;
 import com.bytewood.hermes.model.FileSystemConnection;
 
-public abstract class AbstractTestConnector {
+public abstract class AbstractTestConnector extends LogConfigurationEnabled{
+	private static Logger logger = Logger.getLogger(AbstractTestConnector.class.toString());
 	/**
 	 * This method is to be used by the implementing test class to provide a guaranteed correct stream of a file on the remote file system.
 	 * This is not always possible in which case null can be returned to skip the comparison
@@ -195,6 +203,8 @@ public abstract class AbstractTestConnector {
 
 	@Test //positive
 	public void testDownloadAllFilesInExistingFolder() throws IOException {
+		logger.log(Level.FINE, String.format("testing download of all files from existing folder..."));
+		
 		//first we get all files and folders which are expected in the remote folder
 		Set<String> expectedFolderContent = this.getExpectedFolderContent(this.remoteRoot);
 		List<String> files = this.conn.listDirectory(this.remoteRoot);

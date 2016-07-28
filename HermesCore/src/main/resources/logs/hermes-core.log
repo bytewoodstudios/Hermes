@@ -1,0 +1,7 @@
+2016-07-28 17:10:09 FINE class com.bytewood.filesystem.LogConfigurationEnabled logging.properties from file:/D:/professional/Hermes/HermesCore/target/test-classes/
+2016-07-28 17:10:09 SEVERE class com.bytewood.logging.TestLoggerConfigurations logging statement at level SEVERE
+2016-07-28 17:10:09 WARNING class com.bytewood.logging.TestLoggerConfigurations logging statement at level WARNING
+2016-07-28 17:10:09 INFO class com.bytewood.logging.TestLoggerConfigurations logging statement at level INFO
+2016-07-28 17:10:09 FINE class com.bytewood.logging.TestLoggerConfigurations logging statement at level FINE
+2016-07-28 17:10:09 FINER class com.bytewood.logging.TestLoggerConfigurations logging statement at level FINER
+2016-07-28 17:10:09 FINEST class com.bytewood.logging.TestLoggerConfigurations logging statement at level FINEST

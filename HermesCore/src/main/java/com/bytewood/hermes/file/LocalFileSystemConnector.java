@@ -5,8 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.bytewood.hermes.model.FileSystemConnection;
 
@@ -17,6 +17,8 @@ import com.bytewood.hermes.model.FileSystemConnection;
  * @author rainerkern
  */
 public class LocalFileSystemConnector extends BaseFileSystemConnector<FileSystemConnection> implements FileSystemConnection {
+	@SuppressWarnings("unused")
+	private static Logger log = Logger.getLogger(LocalFileSystemConnector.class.toString());
 	
 	protected boolean isConnected = true;
 	

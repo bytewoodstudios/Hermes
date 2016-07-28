@@ -11,15 +11,18 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.bytewood.hermes.file.LocalFileSystemConnector;
 
 public class TestLocalConnector extends AbstractTestConnector {
+	@SuppressWarnings("unused")
+	private static Logger logger = Logger.getLogger(TestLocalConnector.class.toString());
+	
 	// Junit Temporary folder to hold our test cases
 	private TemporaryFolder tempFolder = new TemporaryFolder();
 

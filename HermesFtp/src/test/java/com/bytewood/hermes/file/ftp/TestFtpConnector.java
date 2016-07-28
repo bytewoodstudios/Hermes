@@ -1,14 +1,19 @@
 package com.bytewood.hermes.file.ftp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.ftpserver.ftplet.FtpException;
@@ -20,26 +25,28 @@ import org.junit.Test;
 import com.bytewood.filesystem.AbstractTestConnector;
 import com.bytewood.test.FtpServerWrapper;
 
-
 public class TestFtpConnector extends AbstractTestConnector {
-
+	
+	private static Logger logger =  Logger.getLogger(TestFtpConnector.class.toString());	
 	static FtpServerWrapper wrapper = new FtpServerWrapper();
 
 	/**
 	 * Before the actual test can start we need to fire up an ftp-server
-	 * @throws FtpException 
+	 * 
+	 * @throws FtpException
 	 */
 	@BeforeClass
 	public static void setupClass() throws FtpException {
 		wrapper.start();
 	}
-	
+
 	@Before
 	public void setup() {
+		logger.log(Level.FINE, String.format(("setting up")));
 		FtpConnector ftp = new FtpConnector();
 		ftp.setConnection(FtpServerWrapper.con);
 		ftp.connect();
-		assertTrue("Connecting to the Test FTP Failed",ftp.isConnected());
+		assertTrue("Connecting to the Test FTP Failed", ftp.isConnected());
 		super.conn = ftp;
 		super.remoteRoot = "/";
 		super.remotePathToADirectory = "/folder1";
@@ -51,16 +58,15 @@ public class TestFtpConnector extends AbstractTestConnector {
 		this.conn.disconnect();
 	}
 
-	/** 
-	 * Provides a guaranteed correct input stream by accessing files via the local file system.
-	 * It is assumed that these files exist
-	 * @throws  
+	/**
+	 * Provides a guaranteed correct input stream by accessing files via the
+	 * local file system. It is assumed that these files exist @throws
 	 */
 	@Override
 	protected InputStream getExpectedFileContent(String path) {
 		File expectedFile = new File(FtpServerWrapper.ftpRoot.getAbsolutePath() + File.separator + path);
-		assertTrue("It is assumed that files to be able to provide content",expectedFile.exists());
-		assertTrue("It is assumed that provided paths are files",expectedFile.isFile());
+		assertTrue("It is assumed that files to be able to provide content", expectedFile.exists());
+		assertTrue("It is assumed that provided paths are files", expectedFile.isFile());
 		try {
 			return new FileInputStream(expectedFile);
 		} catch (FileNotFoundException e) {
@@ -68,21 +74,21 @@ public class TestFtpConnector extends AbstractTestConnector {
 			return null;
 		}
 	}
-	
-	/** 
-	 * Provides a guaranteed correct list of all folder contents by accessing the ftp folder via the local file system.
-	 * It is assumed that the folder exist
-	 * @throws  
+
+	/**
+	 * Provides a guaranteed correct list of all folder contents by accessing
+	 * the ftp folder via the local file system. It is assumed that the folder
+	 * exist @throws
 	 */
 	@Override
 	protected Set<String> getExpectedFolderContent(String path) {
 		File folder = new File(FtpServerWrapper.ftpRoot.getAbsolutePath() + File.separator + path);
-		assertTrue("It is assumed that files to be able to provide content",folder.exists());
-		assertTrue("It is assumed that files provided paths are folders",folder.isDirectory());
-		
+		assertTrue("It is assumed that files to be able to provide content", folder.exists());
+		assertTrue("It is assumed that files provided paths are folders", folder.isDirectory());
+
 		File[] ls = folder.listFiles();
 		Set<String> ret = new HashSet<String>(ls.length);
-		for(File cur : ls) {
+		for (File cur : ls) {
 			String name = path + cur.getName();
 			if (cur.isDirectory())
 				name += File.separator;
@@ -90,7 +96,7 @@ public class TestFtpConnector extends AbstractTestConnector {
 		}
 		return ret;
 	}
-	
+
 	/*
 	 * Tests
 	 */
@@ -99,14 +105,14 @@ public class TestFtpConnector extends AbstractTestConnector {
 		FtpConnector ftp = new FtpConnector();
 		ftp.setFtpClient(null);
 		assertNull(ftp.getFtpClient());
-		
+
 		ftp.setConnection(FtpServerWrapper.con);
 		FTPClient expected = new FTPClient();
 		ftp.setFtpClient(expected);
 		ftp.connect();
 		assertTrue("FtpConnector did not return the provided FTPClient after init", expected == ftp.getFtpClient());
 	}
-	
+
 	/*
 	 * test the Guard
 	 */
@@ -114,7 +120,7 @@ public class TestFtpConnector extends AbstractTestConnector {
 	public void testGuardNullPath() {
 		super.thrown.expect(IllegalArgumentException.class);
 		FtpConnector ftp = (FtpConnector) super.conn;
-		//create new FtpConnection which is not initialised
+		// create new FtpConnection which is not initialised
 		ftp.guard(null);
 		fail("expected exception was not thrown");
 	}
@@ -122,7 +128,7 @@ public class TestFtpConnector extends AbstractTestConnector {
 	@Test
 	public void testGuardBlockUninitialised() {
 		super.thrown.expect(UnsupportedOperationException.class);
-		//create new FtpConnection which is not initialised
+		// create new FtpConnection which is not initialised
 		FtpConnector ftp = new FtpConnector();
 		ftp.guard("path/to/some/File");
 		fail("expected exception was not thrown");
@@ -136,16 +142,16 @@ public class TestFtpConnector extends AbstractTestConnector {
 		FtpConnector ftp = new FtpConnector();
 		ftp.setConnection(FtpServerWrapper.con);
 		assertEquals(FtpServerWrapper.con, ftp.getConnection());
-		
-		//test for ftpClient
+
+		// test for ftpClient
 		FTPClient expected = new FTPClient();
 		ftp.setFtpClient(expected);
 		assertEquals(expected, ftp.getFtpClient());
-		
-		//test for connectRetry
+
+		// test for connectRetry
 		ftp.setMaxConnectionRetries(5);
 		assertEquals(5, ftp.getMaxConnectionRetries());
-		
+
 	}
-	
+
 }

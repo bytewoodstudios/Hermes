@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.logging.Logger;
 
 import org.junit.After;
 import org.junit.Test;
@@ -15,6 +16,9 @@ import com.bytewood.hermes.file.TempFileProvider;
 
 public class TestTempFileProvider {
 
+	@SuppressWarnings("unused")
+	private static Logger logger = Logger.getLogger(TestTempFileProvider.class.toString());
+	
 	private File tmp;
 	
 	@After
