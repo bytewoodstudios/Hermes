@@ -43,7 +43,6 @@ public class FtpServerWrapper {
 		con.setPort(ftpPort);
 		con.setUserName(ftpUserName);
 		con.setPassword(ftpUserPass);
-		
 	}
 	
 	private static final List<BaseUser> users = new ArrayList<BaseUser>();
